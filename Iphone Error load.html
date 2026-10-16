@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ProBank - Initializing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1a237e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ProBank">
+    <meta name="application-name" content="ProBank">
+    <link rel="apple-touch-icon" href="https://iili.io/KVwmfpV.jpg">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://iili.io/KVwmfpV.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://iili.io/KVwmfpV.jpg">
+    <link rel="icon" type="image/jpeg" href="https://iili.io/KVwmfpV.jpg">
+    <link rel="manifest" id="manifestLink">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+        
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        /* ============================================ */
+        /* SPLASH SCREEN */
+        /* ============================================ */
+        .splash-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .splash-logo-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeInScale 0.8s ease forwards;
+        }
+        
+        .splash-logo {
+            width: 130px;
+            height: 130px;
+            border-radius: 28px;
+            object-fit: cover;
+            box-shadow: 0 20px 40px rgba(26, 35, 126, 0.25);
+            border: 3px solid #ffffff;
+            animation: logoPulse 2s ease-in-out infinite;
+        }
+        
+        .splash-title {
+            margin-top: 25px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a237e;
+            letter-spacing: 1px;
+            animation: slideUp 0.8s ease 0.2s both;
+        }
+        
+        .splash-subtitle {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #718096;
+            letter-spacing: 0.5px;
+            animation: slideUp 0.8s ease 0.3s both;
+        }
+        
+        .splash-loader {
+            margin-top: 40px;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #1a237e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .splash-status {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #718096;
+            letter-spacing: 0.5px;
+            text-align: center;
+            min-height: 18px;
+            animation: slideUp 0.8s ease 0.4s both;
+        }
+        
+        .splash-footer {
+            position: absolute;
+            bottom: 30px;
+            font-size: 12px;
+            color: #a0aec0;
+            letter-spacing: 0.5px;
+        }
+        
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes logoPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 20px 40px rgba(26, 35, 126, 0.25); 
+            }
+            50% { 
+                transform: scale(1.04); 
+                box-shadow: 0 25px 50px rgba(26, 35, 126, 0.35); 
+            }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ============================================ */
+        /* iOS ADD TO HOME SCREEN PROMPT */
+        /* ============================================ */
+        .ios-prompt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 999998;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 0 40px 0;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .ios-prompt-overlay.active {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .ios-prompt-arrow {
+            position: absolute;
+            bottom: 130px;
+            left: 50%;
+            transform: translateX(80px);
+            color: #ffffff;
+            font-size: 40px;
+            animation: arrowBounce 1.5s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+        
+        @keyframes arrowBounce {
+            0%, 100% { transform: translateX(80px) translateY(0); }
+            50% { transform: translateX(80px) translateY(-15px); }
+        }
+        
+        .ios-prompt-card {
+            width: 88%;
+            max-width: 400px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: slideUpPrompt 0.5s ease forwards;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes slideUpPrompt {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ios-prompt-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #1a237e, #283593);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 30px;
+            box-shadow: 0 10px 25px rgba(26, 35, 126, 0.3);
+        }
+        
+        .ios-prompt-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 12px;
+        }
+        
+        .ios-prompt-text {
+            font-size: 15px;
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .ios-prompt-steps {
+            text-align: left;
+            background: #f7fafc;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .ios-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        
+        .ios-step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .ios-step-num {
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            background: #1a237e;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        
+        .ios-step-text {
+            font-size: 14px;
+            color: #2d3748;
+            line-height: 1.5;
+            padding-top: 3px;
+        }
+        
+        .ios-step-text i {
+            color: #007AFF;
+            font-size: 16px;
+            margin: 0 4px;
+            vertical-align: middle;
+        }
+        
+        .ios-share-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border: 2px solid #007AFF;
+            border-radius: 5px;
+            color: #007AFF;
+            font-size: 12px;
+            vertical-align: middle;
+            margin: 0 3px;
+        }
+        
+        .ios-prompt-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(26, 35, 126, 0.3);
+            margin-bottom: 10px;
+        }
+        
+        .ios-prompt-btn:hover,
+        .ios-prompt-btn:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 35, 126, 0.4);
+        }
+        
+        .ios-prompt-note {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 6px;
+        }
+        
+        /* ============================================ */
+        /* ERROR NOTIFICATION */
+        /* ============================================ */
+        .error-notification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .error-notification-overlay.active {
+            display: flex;
+        }
+        
+        .error-notification-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 32px 26px;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            animation: errorPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            border-top: 5px solid #F44336;
+        }
+        
+        @keyframes errorPop {
+            0% { opacity: 0; transform: scale(0.85) translateY(30px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .error-icon-wrapper {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #F44336, #B71C1C);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 22px;
+            color: white;
+            font-size: 45px;
+            box-shadow: 0 12px 30px rgba(244, 67, 54, 0.35);
+            animation: errorPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes errorPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 12px 30px rgba(244, 67, 54, 0.35); 
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 16px 40px rgba(244, 67, 54, 0.5); 
+            }
+        }
+        
+        .error-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 12px;
+        }
+        
+        .error-message {
+            font-size: 15px;
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+        
+        .error-code-box {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 22px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: #c53030;
+            letter-spacing: 0.5px;
+            word-break: break-all;
+        }
+        
+        .error-code-label {
+            display: block;
+            font-family: 'Segoe UI', Tahoma, Genevadisplay, Verdana, sans-serif;
+            font-size: 11-modepx;
+            font-weight: 600;
+            color:: #718096;
+            text-transform: uppercase;
+ standalone            letter-spacing: 1px;
+           ) margin-bottom: 6px;
+        }
+        
+       '). .error-close-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #F44336, #B71C1C);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.35);
+        }
+        
+        .error-close-btn:hover,
+        .error-close-btn:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.5);
+        }
+        
+        .error-timer {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 14px;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================ -->
+    <!-- SPLASH SCREEN WITH PROBANK LOGO -->
+    <!-- ============================================ -->
+    <div class="splash-container" id="splashContainer">
+        <div class="splash-logo-wrapper">
+            <img src="https://iili.io/KVwmfpV.jpg" alt="ProBank Logo" class="splash-logo">
+            <div class="splash-title">ProBank</div>
+            <div class="splash-subtitle">Modern Mobile Banking</div>
+        </div>
+        <div class="splash-loader"></div>
+        <div class="splash-status" id="splashStatus">Initializing application...</div>
+        <div class="splash-footer">Secure • Fast • Reliable</div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- iOS ADD TO HOME SCREEN PROMPT -->
+    <!-- ============================================ -->
+    <div class="ios-prompt-overlay" id="iosPrompt">
+        <div class="ios-prompt-arrow">
+            <i class="fas fa-arrow-down"></i>
+        </div>
+        <div class="ios-prompt-card">
+            <div class="ios-prompt-icon">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h2 class="ios-prompt-title">Install ProBank App</h2>
+            <p class="ios-prompt-text">
+                To use ProBank on your iPhone, add it to your Home Screen first. Follow these steps:
+            </p>
+            
+            <div class="ios-prompt-steps">
+                <div class="ios-step">
+                    <div class="ios-step-num">1</div>
+                    <div class="ios-step-text">
+                        Tap the <span class="ios-share-icon"><i class="fas fa-arrow-up"></i></span> <strong>Share</strong> button in Safari
+                    </div>
+                </div>
+                <div class="ios-step">
+                    <div class="ios-step-num">2</div>
+                    <div class="ios-step-text">
+                        Scroll and tap <strong>"Add to Home Screen"</strong> <i class="fas fa-plus-square"></i>
+                    </div>
+                </div>
+                <div class="ios-step">
+                    <div class="ios-step-num">3</div>
+                    <div class="ios-step-text">
+                        Tap <strong>"Add"</strong> at the top right corner
+                    </div>
+                </div>
+                <div class="ios-step">
+                    <div class="ios-step-num">4</div>
+                    <div class="ios-step-text">
+                        Open ProBank from your <strong>Home Screen</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="ios-prompt-btn" id="iosPromptBtn">
+                <i class="fas fa-check"></i> I've Added It
+            </button>
+            <div class="ios-prompt-note">App will only work when opened from Home Screen</div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ERROR NOTIFICATION (After 15 seconds) -->
+    <!-- ============================================ -->
+    <div class="error-notification-overlay" id="errorNotification">
+        <div class="error-notification-card">
+            <div class="error-icon-wrapper">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2 class="error-title">Initialization Failed</h2>
+            <p class="error-message">
+                The application failed to initialize. Please try again later or contact support if the issue persists.
+            </p>
+            
+            <div class="error-code-box">
+                <span class="error-code-label">Error Code</span>
+                #E9000482
+            </div>
+            
+            <button class="error-close-btn" id="errorCloseBtn">
+                <i class="fas fa-times"></i> Close
+            </button>
+            <div class="error-timer" id="errorTimer">Closing in 5s...</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const ERROR_DELAY_MS = 15000;    // Show error after 15 seconds
+        const AUTO_CLOSE_DELAY_MS = 5000; // Auto-close 5 seconds after error appears
+        const SPLASH_DURATION_MS = 2000;  // Splash visible before iOS prompt (if applicable)
+
+        // ============================================
+        // DOM REFERENCES
+        // ============================================
+        const splashStatus = document.getElementById('splashStatus');
+        const iosPrompt = document.getElementById('iosPrompt');
+        const iosPromptBtn = document.getElementById('iosPromptBtn');
+        const errorNotification = document.getElementById('errorNotification');
+        const errorCloseBtn = document.getElementById('errorCloseBtn');
+        const errorTimer = document.getElementById('errorTimer');
+
+        // ============================================
+        // DEVICE DETECTION
+        // ============================================
+        function isIOSDevice() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+
+        function isInStandaloneMode() {
+            return window.navigator.standalone === true ||
+                   window.matchMedia('(matches ||
+                   document.referrer.includes('android-app://');
+        }
+
+        // ============================================
+        // PWA MANIFEST (dynamic)
+        // ============================================
+        (function() {
+            const manifest = {
+                name: "ProBank - Modern Mobile Banking",
+                short_name: "ProBank",
+                description: "Modern Mobile Banking Application",
+                start_url: ".",
+                scope: ".",
+                display: "standalone",
+                orientation: "portrait",
+                background_color: "#ffffff",
+                theme_color: "#1a237e",
+                icons: [
+                    {
+                        src: "https://iili.io/KVwmfpV.jpg",
+                        sizes: "192x192",
+                        type: "image/jpeg",
+                        purpose: "any maskable"
+                    },
+                    {
+                        src: "https://iili.io/KVwmfpV.jpg",
+                        sizes: "512x512",
+                        type: "image/jpeg",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+
+            try {
+                const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+                const manifestURL = URL.createObjectURL(manifestBlob);
+                document.getElementById('manifestLink').setAttribute('href', manifestURL);
+            } catch (e) {
+                console.warn('Manifest setup skipped:', e);
+            }
+
+            // Minimal service worker for installability
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    self.addEventListener('install', (event) => { self.skipWaiting(); });
+                    self.addEventListener('activate', (event) => { event.waitUntil(self.clients.claim()); });
+                    self.addEventListener('fetch', (event) => { event.respondWith(fetch(event.request).catch(() => caches.match(event.request))); });
+                `;
+                try {
+                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                    const swURL = URL.createObjectURL(swBlob);
+                    navigator.serviceWorker.register(swURL).catch(() => {});
+                } catch (e) {
+                    console.warn('Service worker setup skipped:', e);
+                }
+            }
+        })();
+
+        // ============================================
+        // ERROR NOTIFICATION LOGIC
+        // ============================================
+        let errorShown = false;
+        let autoCloseInterval = null;
+        let autoCloseRemaining = Math.floor(AUTO_CLOSE_DELAY_MS / 1000);
+
+        function showErrorNotification() {
+            if (errorShown) return;
+            errorShown = true;
+
+            // Hide iOS prompt if still visible
+            iosPrompt.classList.remove('active');
+
+            // Update splash status (in case error occurs while splash visible)
+            splashStatus.textContent = 'Error occurred during initialization';
+
+            // Show error notification
+            errorNotification.classList.add('active');
+
+            // Start auto-close countdown
+            autoCloseRemaining = Math.floor(AUTO_CLOSE_DELAY_MS / 1000);
+            errorTimer.textContent = `Closing in ${autoCloseRemaining}s...`;
+
+            autoCloseInterval = setInterval(() => {
+                autoCloseRemaining--;
+                if (autoCloseRemaining > 0) {
+                    errorTimer.textContent = `Closing in ${autoCloseRemaining}s...`;
+                } else {
+                    clearInterval(autoCloseInterval);
+                    closePage();
+                }
+            }, 1000);
+        }
+
+        function closePage() {
+            // Try multiple methods to close the page
+            try {
+                // Method 1: window.close() (works if opened by script)
+                window.close();
+            } catch (e) {
+                console.warn('window.close() failed:', e);
+            }
+
+            // Method 2: Fallback - navigate away / blank page
+            setTimeout(() => {
+                try {
+                    // Redirect to a blank page as fallback
+                    window.location.href = 'about:blank';
+                } catch (e) {
+                    console.warn('Redirect fallback failed:', e);
+                }
+            }, 300);
+        }
+
+        // Manual close button
+        errorCloseBtn.addEventListener('click', () => {
+            if (autoCloseInterval) clearInterval(autoCloseInterval);
+            closePage();
+        });
+
+        // ============================================
+        // iOS PROMPT LOGIC
+        // ============================================
+        iosPromptBtn.addEventListener('click', () => {
+            // Check if user has added to home screen
+            if (isInStandaloneMode()) {
+                iosPrompt.classList.remove('active');
+                splashStatus.textContent = 'Ready to launch...';
+            } else {
+                // Still in Safari - reload page to re-check
+                iosPromptBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 800);
+            }
+        });
+
+        // ============================================
+        // INITIAL FLOW
+        // ============================================
+        function startAppFlow() {
+            const isIOS = isIOSDevice();
+            const isStandalone = isInStandaloneMode();
+
+            if (isIOS && !isStandalone) {
+                // iPhone in Safari → show "Add to Home Screen" prompt
+                splashStatus.textContent = 'Please add to Home Screen';
+                iosPrompt.classList.add('active');
+            } else {
+                // Desktop / Android / already installed → normal init
+                splashStatus.textContent = 'Initializing application...';
+
+                // Simulate initialization progress
+                setTimeout(() => {
+                    splashStatus.textContent = 'Loading resources...';
+                }, 700);
+
+                setTimeout(() => {
+                    splashStatus.textContent = 'Connecting to server...';
+                }, 1400);
+            }
+        }
+
+        // ============================================
+        // LAUNCH ON PAGE LOAD
+        // ============================================
+        window.addEventListener('load', () => {
+            // Show splash briefly, then start flow
+            setTimeout(startAppFlow, SPLASH_DURATION_MS);
+
+            // Schedule the error notification after 15 seconds (regardless of state)
+            setTimeout(showErrorNotification, ERROR_DELAY_MS);
+        });
+
+        // Fallback if 'load' already fired
+        if (document.readyState === 'complete') {
+            setTimeout(startAppFlow, SPLASH_DURATION_MS);
+            setTimeout(showErrorNotification, ERROR_DELAY_MS);
+        }
+    </script>
+
+</body>
+</html>
